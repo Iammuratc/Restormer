@@ -21,15 +21,16 @@ from pdb import set_trace as stx
 
 parser = argparse.ArgumentParser(description='Single Image Motion Deblurring using Restormer')
 
-parser.add_argument('--input_dir', default='./Datasets/', type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='./results/', type=str, help='Directory for results')
+parser.add_argument('--input-dir', default='./Datasets/', type=str, help='Directory of validation images')
+parser.add_argument('--result-dir', default='./results/', type=str, help='Directory for results')
 parser.add_argument('--weights', default='./pretrained_models/motion_deblurring.pth', type=str, help='Path to weights')
-parser.add_argument('--dataset', default='GoPro', type=str, help='Test Dataset') # ['GoPro', 'HIDE', 'RealBlur_J', 'RealBlur_R']
+parser.add_argument('--yaml-file', type=str, help='Path to yaml file')
+# parser.add_argument('--dataset', default='GoPro', type=str, help='Test Dataset') # ['GoPro', 'HIDE', 'RealBlur_J', 'RealBlur_R']
 
 args = parser.parse_args()
 
 ####### Load yaml #######
-yaml_file = 'Options/Deblurring_Restormer.yml'
+yaml_file = args.yaml_file
 import yaml
 
 try:
@@ -53,11 +54,12 @@ model_restoration.eval()
 
 
 factor = 8
-dataset = args.dataset
-result_dir  = os.path.join(args.result_dir, dataset)
+# dataset = args.dataset
+result_dir  = os.path.join(args.result_dir)
 os.makedirs(result_dir, exist_ok=True)
 
-inp_dir = os.path.join(args.input_dir, 'test', dataset, 'input')
+# inp_dir = os.path.join(args.input_dir, 'test', dataset, 'input')
+inp_dir = args.input_dir
 files = natsorted(glob(os.path.join(inp_dir, '*.png')) + glob(os.path.join(inp_dir, '*.jpg')))
 with torch.no_grad():
     for file_ in tqdm(files):

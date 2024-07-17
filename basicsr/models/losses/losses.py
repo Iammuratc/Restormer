@@ -9,8 +9,8 @@ _reduction_modes = ['none', 'mean', 'sum']
 
 
 @weighted_loss
-def l1_loss(pred, target):
-    return F.l1_loss(pred, target, reduction='none')
+def l1_loss(pred, target, reduction='none'):
+    return F.l1_loss(pred, target, reduction=reduction)
 
 
 @weighted_loss

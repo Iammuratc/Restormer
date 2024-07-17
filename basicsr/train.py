@@ -6,6 +6,7 @@ import random
 import time
 import torch
 from os import path as osp
+import os
 
 from basicsr.data import create_dataloader, create_dataset
 from basicsr.data.data_sampler import EnlargedSampler
@@ -27,9 +28,9 @@ def parse_options(is_train=True):
     parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm'],
-        default='none',
+        default='pytorch',
         help='job launcher')
-    parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument('--local-rank', default=os.environ['LOCAL_RANK'])
     args = parser.parse_args()
     opt = parse(args.opt, is_train=is_train)
 
@@ -135,24 +136,21 @@ def main():
     # torch.backends.cudnn.deterministic = True
 
     # automatic resume ..
-    state_folder_path = 'experiments/{}/training_states/'.format(opt['name'])
-    import os
-    try:
-        states = os.listdir(state_folder_path)
-    except:
-        states = []
+    # state_folder_path = 'experiments/{}/training_states/'.format(opt['name'])
+    # try:
+    #     states = os.listdir(state_folder_path)
+    # except:
+    #     states = []
 
-    resume_state = None
-    if len(states) > 0:
-        max_state_file = '{}.state'.format(max([int(x[0:-6]) for x in states]))
-        resume_state = os.path.join(state_folder_path, max_state_file)
-        opt['path']['resume_state'] = resume_state
-
+    # if len(states) > 0:
+    #     max_state_file = '{}.state'.format(max([int(x[0:-6]) for x in states]))
+    #     resume_state = os.path.join(state_folder_path, max_state_file)
+    #     opt['path']['resume_state'] = resume_state
     # load resume states if necessary
     if opt['path'].get('resume_state'):
         device_id = torch.cuda.current_device()
         resume_state = torch.load(
-            opt['path']['resume_state'],
+            opt['path']['pretrain_network_g'],
             map_location=lambda storage, loc: storage.cuda(device_id))
     else:
         resume_state = None
